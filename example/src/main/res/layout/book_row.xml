@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content"
+	android:paddingLeft="@dimen/row_horiziontal_padding"
+	android:paddingTop="@dimen/row_vertical_padding"
+	android:paddingRight="@dimen/row_horiziontal_padding"
+	android:paddingBottom="@dimen/row_vertical_padding"
+	android:background="@android:color/holo_blue_light">
+
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_toLeftOf="@+id/imageView"
+		android:gravity="right">
+
+		<RelativeLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:text="Large Text"
+				android:id="@+id/mainText"
+				android:ellipsize="end"
+				android:layout_alignParentRight="true"
+				android:layout_toRightOf="@+id/dateText"
+				android:gravity="right" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:text="Small Text"
+				android:id="@+id/dateText"
+				android:layout_alignParentRight="false"
+				android:layout_alignParentTop="true"
+				android:gravity="right"
+				android:layout_alignParentLeft="true"
+				android:paddingRight="@dimen/row_horiziontal_padding" />
+		</RelativeLayout>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:text="Medium Text"
+			android:id="@+id/subText"
+			android:ellipsize="end" />
+	</LinearLayout>
+
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/imageView"
+		android:src="@drawable/icon_book"
+		android:layout_marginLeft="@dimen/row_horiziontal_padding"
+		android:layout_alignParentRight="true" />
+
+
+</RelativeLayout>

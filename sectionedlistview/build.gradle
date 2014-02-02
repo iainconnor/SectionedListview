@@ -1,0 +1,43 @@
+apply plugin: 'android-library'
+
+repositories {
+	mavenCentral()
+}
+
+android {
+	compileSdkVersion 19
+	buildToolsVersion "19.0.1"
+
+	defaultConfig {
+		minSdkVersion 8
+		targetSdkVersion 19
+		versionCode 1
+		versionName "1.0"
+	}
+	release {
+		runProguard false
+		proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+	}
+}
+
+apply plugin: 'maven'
+
+group = 'com.iainconnor'
+version = '0.0.1-SNAPSHOT'
+project.ext.description = "A listview with sections."
+
+dependencies {
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			pom.project {
+				name project.getName()
+				description project.ext.description
+			}
+			repository url: 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+			repository url: 'file://' + new File("./maven").absolutePath
+		}
+	}
+}

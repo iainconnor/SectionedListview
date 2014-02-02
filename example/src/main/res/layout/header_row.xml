@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content"
+	android:paddingLeft="@dimen/row_horiziontal_padding"
+	android:paddingTop="@dimen/row_vertical_padding"
+	android:paddingRight="@dimen/row_horiziontal_padding"
+	android:paddingBottom="@dimen/row_vertical_padding"
+	android:background="@android:color/holo_purple">
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:text="Medium Text"
+		android:id="@+id/headerText" />
+</LinearLayout>
