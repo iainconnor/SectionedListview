@@ -55,6 +55,8 @@ public class MainActivity extends ActionBarActivity {
 
 			sectionedListView = (SectionedListView) rootView.findViewById(R.id.list_view);
 
+			sectionedListView.addHeaderView(inflater.inflate(R.layout.header, sectionedListView, false));
+
 			ArrayList<Movie> movies = new ArrayList<Movie>();
 			movies.add(new Movie(1, "Brief Encounter", "David Lean", 1945));
 			movies.add(new Movie(2, "Casablanca", "Michael Curtiz", 1942));

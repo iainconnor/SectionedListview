@@ -86,15 +86,23 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		}
 	}
 
+	@Override
+	protected void onMeasure ( int widthMeasureSpec, int heightMeasureSpec ) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+		widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		heightMode = MeasureSpec.getMode(heightMeasureSpec);
+	}
+
 	public void setOnItemClickListener ( SectionedListViewOnItemClickListener listener ) {
 		super.setOnItemClickListener(listener);
 	}
 
 	protected void checkForFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
 		if (pinHeaders && sectionedAdapter != null && sectionedAdapter.getGlobalCount() > 1 && (firstVisibleGlobalPosition >= getHeaderViewsCount())) {
-			updateFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
+			updateFloatingHeader(firstVisibleGlobalPosition - getHeaderViewsCount(), visibleItemCount);
 		} else {
-			resetFloatingHeader();
+			resetFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
 		}
 	}
 
@@ -156,18 +164,16 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		}
 	}
 
-	protected void resetFloatingHeader () {
+	protected void resetFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
 		floatingHeader = null;
 		floatingHeaderOffset = 0.0f;
-		// @TODO, not sure where this is coming from
-		/*
-		for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
-                View header = getChildAt(i);
-                if (header != null) {
-                    header.setVisibility(VISIBLE);
-                }
-            }
-		 */
+
+		for (int globalPosition = firstVisibleGlobalPosition; globalPosition < firstVisibleGlobalPosition + visibleItemCount; globalPosition++) {
+			View header = getChildAt(globalPosition);
+			if (header != null) {
+				header.setVisibility(VISIBLE);
+			}
+		}
 	}
 
 	protected void setup () {
