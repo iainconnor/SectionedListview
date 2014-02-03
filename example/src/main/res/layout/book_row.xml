@@ -5,9 +5,9 @@
 	android:paddingTop="@dimen/row_vertical_padding"
 	android:paddingRight="@dimen/row_horiziontal_padding"
 	android:paddingBottom="@dimen/row_vertical_padding"
-	android:background="@android:color/holo_blue_light">
+	android:background="#33b5e5">
 
-	<LinearLayout
+<LinearLayout
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"

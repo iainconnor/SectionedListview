@@ -5,9 +5,9 @@
 	android:paddingTop="@dimen/row_vertical_padding"
 	android:paddingRight="@dimen/row_horiziontal_padding"
 	android:paddingBottom="@dimen/row_vertical_padding"
-	android:background="@android:color/holo_orange_light">
+	android:background="#fb3">
 
-	<ImageView
+<ImageView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:id="@+id/imageView"
