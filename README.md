@@ -6,6 +6,8 @@
 
 @TODO
 
+![demonstration](https://github.com/iainconnor/SectionedListview/blob/master/example/demo.gif)
+
 *NOTE:* Consider this untested.
 
 ## Installing in Gradle
