@@ -6,7 +6,7 @@
 
 @TODO
 
-![demonstration](https://github.com/iainconnor/SectionedListview/blob/master/example/demo.gif)
+![demonstration](https://raw2.github.com/iainconnor/SectionedListview/master/example/demo.gif)
 
 *NOTE:* Consider this untested.
 
