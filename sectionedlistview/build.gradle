@@ -23,7 +23,7 @@ android {
 apply plugin: 'maven'
 
 group = 'com.iainconnor'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 project.ext.description = "A listview with sections."
 
 dependencies {
