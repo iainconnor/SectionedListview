@@ -159,7 +159,7 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 
 			if (child.isClickable()) {
 				if (isTouchInView(child, touchX, touchY)) {
-					child.callOnClick();
+					child.performClick();
 				}
 			}
 		}
@@ -167,15 +167,14 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 
 	protected void clickFloatingHeader ( final MotionEvent ev ) {
 		int globalPostion = sectionedAdapter.getGlobalPositionForHeader(floatingHeaderSection);
-		smoothScrollToPositionFromTop(getHeaderViewsCount() + globalPostion, 1, 100);
-		android.os.Handler handler = new android.os.Handler();
-		postDelayed(new Runnable() {
+		setSelectionFromTop(getHeaderViewsCount() + globalPostion, 1);
+		post(new Runnable() {
 			@Override
 			public void run () {
 				ViewGroup firstView = (ViewGroup) getChildAt(0);
 				searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
 			}
-		}, 150);
+		});
 	}
 
 	protected boolean isTouchInView ( View view, float touchX, float touchY ) {

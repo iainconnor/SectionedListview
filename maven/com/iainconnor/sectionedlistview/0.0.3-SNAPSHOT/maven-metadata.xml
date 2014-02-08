@@ -2,13 +2,12 @@
 <metadata>
 	<groupId>com.iainconnor</groupId>
 	<artifactId>sectionedlistview</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<versioning>
-		<versions>
-			<version>0.0.1-SNAPSHOT</version>
-			<version>0.0.2-SNAPSHOT</version>
-			<version>0.0.3-SNAPSHOT</version>
-		</versions>
+		<snapshot>
+			<timestamp>20140208.181141</timestamp>
+			<buildNumber>1</buildNumber>
+		</snapshot>
 		<lastUpdated>20140208181141</lastUpdated>
 	</versioning>
 </metadata>
