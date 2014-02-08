@@ -12,5 +12,7 @@ buildscript {
 allprojects {
     repositories {
         mavenCentral()
+	    maven {url 'http://archiva.tippingcanoe.com/repository/internal/'}
+	    maven {url 'http://archiva.tippingcanoe.com/repository/snapshots/'}
     }
 }
