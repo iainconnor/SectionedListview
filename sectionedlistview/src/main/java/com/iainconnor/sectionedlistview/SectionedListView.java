@@ -99,9 +99,8 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 				}
 
 				if (touchAction == MotionEvent.ACTION_UP) {
-					super.dispatchTouchEvent(ev);
-					clickFloatingHeader();
 					clearTouch();
+					clickFloatingHeader(ev);
 				} else if (touchAction == MotionEvent.ACTION_CANCEL) {
 					clearTouch();
 				} else if (touchAction == MotionEvent.ACTION_MOVE && (Math.abs(touchDownX - touchX) > maxMoveDistanceForTouch || Math.abs(touchDownY - touchY) > maxMoveDistanceForTouch)) {
@@ -149,8 +148,45 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		super.setOnItemClickListener(listener);
 	}
 
-	protected void clickFloatingHeader () {
-		setSelection(getHeaderViewsCount() + sectionedAdapter.getGlobalPositionForHeader(floatingHeaderSection));
+	protected void searchForClickableChildren ( ViewGroup parent, float touchX, float touchY ) {
+		for (int i = 0; i < parent.getChildCount(); i++) {
+			View child = parent.getChildAt(i);
+			if (child instanceof ViewGroup) {
+				if (((ViewGroup) child).getChildCount() > 0) {
+					searchForClickableChildren((ViewGroup) child, touchX, touchY);
+				}
+			}
+
+			if (child.isClickable()) {
+				if (isTouchInView(child, touchX, touchY)) {
+					child.callOnClick();
+				}
+			}
+		}
+	}
+
+	protected void clickFloatingHeader ( final MotionEvent ev ) {
+		int globalPostion = sectionedAdapter.getGlobalPositionForHeader(floatingHeaderSection);
+		smoothScrollToPositionFromTop(getHeaderViewsCount() + globalPostion, 1, 100);
+		android.os.Handler handler = new android.os.Handler();
+		postDelayed(new Runnable() {
+			@Override
+			public void run () {
+				ViewGroup firstView = (ViewGroup) getChildAt(0);
+				searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
+			}
+		}, 150);
+	}
+
+	protected boolean isTouchInView ( View view, float touchX, float touchY ) {
+		int[] screenLocation = new int[2];
+		view.getLocationOnScreen(screenLocation);
+
+		Rect hitRect = new Rect();
+		view.getHitRect(hitRect);
+		hitRect.offset(screenLocation[0] - view.getLeft(), screenLocation[1] - view.getTop());
+
+		return hitRect.contains((int) touchX, (int) touchY);
 	}
 
 	protected boolean isTouchInFloatingHeader ( float touchX, float touchY ) {
