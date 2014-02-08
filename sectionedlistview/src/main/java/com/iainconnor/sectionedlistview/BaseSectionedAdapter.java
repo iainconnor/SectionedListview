@@ -1,6 +1,5 @@
 package com.iainconnor.sectionedlistview;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -85,10 +84,8 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	@Override
 	public View getView ( int globalPosition, View convertView, ViewGroup parent ) {
 		if (isHeader(globalPosition)) {
-			Log.v("Iain", "Yes, " + globalPosition + " is a header");
 			return getHeaderView(getSection(globalPosition), convertView, parent);
 		} else {
-			Log.v("Iain", "No, " + globalPosition + " is an item");
 			return getView(getSection(globalPosition), getPositionInSection(globalPosition), convertView, parent);
 		}
 	}
@@ -97,17 +94,14 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	public int getItemViewType ( int globalPosition ) {
 		if (isHeader(globalPosition)) {
 			// Avoids collision
-			Log.v("Foo", "For header" + (getItemViewTypeCount() + getHeaderItemViewType(getSection(globalPosition))));
 			return getItemViewTypeCount() + getHeaderItemViewType(getSection(globalPosition));
 		} else {
-			Log.v("Foo", "For item" + (getItemViewType(getSection(globalPosition), getPositionInSection(globalPosition))));
 			return getItemViewType(getSection(globalPosition), getPositionInSection(globalPosition));
 		}
 	}
 
 	@Override
 	public int getViewTypeCount () {
-		Log.v("Foo", "View type count is " + (getItemViewTypeCount()  +  getHeaderViewTypeCount()));
 		return getItemViewTypeCount() + getHeaderViewTypeCount();
 	}
 
@@ -134,11 +128,34 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	@Override
 	public boolean isHeader ( int globalPosition ) {
 		if (globalPositionSectionStartCache.contains(globalPosition)) {
-			Log.v("Iain", "From cache for " + globalPosition);
 			return true;
 		} else {
 			return calculateIsHeader(globalPosition);
 		}
+	}
+
+	@Override
+	public int getGlobalPositionForHeader ( int section ) {
+		if (globalPositionSectionStartCache.size() >= section) {
+			return globalPositionSectionStartCache.get(section);
+		} else {
+			return calculateGlobalPositionForHeader(section);
+		}
+	}
+
+	@Override
+	public int getGlobalPositionForItem ( int section, int position ) {
+		int sum = 0;
+
+		for (int i = section; i > 0; i--) {
+			if (i == section) {
+				sum += position;
+			} else {
+				sum += getCountInSection(i);
+			}
+		}
+
+		return sum + section;
 	}
 
 	protected int calculateGlobalCount () {
@@ -177,6 +194,26 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		}
 
 		return 0;
+	}
+
+	protected int calculateGlobalPositionForHeader ( int header ) {
+		int globalPositionSectionStart = 0;
+		for (int section = 0; section < getSectionCount(); section++) {
+			if (globalPositionSectionStartCache.size() <= section) {
+				globalPositionSectionStartCache.add(globalPositionSectionStart);
+			} else {
+				globalPositionSectionStartCache.set(section, globalPositionSectionStart);
+			}
+			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
+
+			if (header == section) {
+				return globalPositionSectionStart;
+			}
+
+			globalPositionSectionStart = globalPositionSectionEnd;
+		}
+
+		return -1;
 	}
 
 	protected boolean calculateIsHeader ( int globalPosition ) {

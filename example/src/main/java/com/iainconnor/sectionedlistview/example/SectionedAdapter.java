@@ -1,11 +1,12 @@
 package com.iainconnor.sectionedlistview.example;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.iainconnor.sectionedlistview.BaseSectionedAdapter;
 
 import java.util.ArrayList;
@@ -75,7 +76,6 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 
 	@Override
 	public View getView ( int section, int position, View convertView, ViewGroup parent ) {
-		Log.v("Iain", section + ", " + position );
 		View view;
 
 		if (convertView != null && convertView.getTag().equals(Integer.toString(section))) {
@@ -132,6 +132,24 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 			} else {
 				((TextView) view.findViewById(R.id.headerText)).setText("Movies");
 			}
+
+			Button moviesButton = (Button) view.findViewById(R.id.moviesButton);
+			moviesButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick ( View v ) {
+					Toast toast = Toast.makeText(context, "I love movies!", Toast.LENGTH_LONG);
+					toast.show();
+				}
+			});
+
+			Button booksButton = (Button) view.findViewById(R.id.booksButton);
+			booksButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick ( View v ) {
+					Toast toast = Toast.makeText(context, "I love books too!", Toast.LENGTH_LONG);
+					toast.show();
+				}
+			});
 		}
 
 		return view;
@@ -146,10 +164,8 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 	public int getCountInSection ( int section ) {
 
 		if (section == BOOK_SECTION) {
-			Log.v("Iain", "Sec " + section + " " + books.size());
 			return books.size();
 		} else if (section == MOVIE_SECTION) {
-			Log.v("Iain", "Sec " + section + " " + movies.size());
 			return movies.size();
 		}
 

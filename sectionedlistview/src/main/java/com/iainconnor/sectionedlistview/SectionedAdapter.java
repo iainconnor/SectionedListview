@@ -27,4 +27,8 @@ public interface SectionedAdapter {
 	public int getHeaderViewTypeCount ();
 
 	public int getGlobalCount ();
+
+	public int getGlobalPositionForHeader ( int section );
+
+	public int getGlobalPositionForItem ( int section, int position );
 }

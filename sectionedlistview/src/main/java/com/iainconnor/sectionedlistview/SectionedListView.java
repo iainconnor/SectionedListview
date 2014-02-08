@@ -2,8 +2,11 @@ package com.iainconnor.sectionedlistview;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
@@ -19,6 +22,11 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	protected boolean pinHeaders = true;
 	protected int widthMode;
 	protected int heightMode;
+	protected View touchTarget;
+	protected MotionEvent touchDownEvent;
+	protected float touchDownX = -1;
+	protected float touchDownY = -1;
+	protected int maxMoveDistanceForTouch;
 
 	public SectionedListView ( Context context ) {
 		super(context);
@@ -73,6 +81,49 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		checkForFloatingHeader(firstVisibleItem, visibleItemCount);
 	}
 
+	@Override
+	public boolean dispatchTouchEvent ( MotionEvent ev ) {
+		if (pinHeaders && floatingHeader != null) {
+			float touchX = ev.getX();
+			float touchY = ev.getY();
+			int touchAction = ev.getAction();
+
+			if (touchAction == MotionEvent.ACTION_DOWN && touchTarget == null && isTouchInFloatingHeader(touchX, touchY)) {
+				touchTarget = floatingHeader;
+				touchDownX = touchX;
+				touchDownY = touchY;
+				touchDownEvent = MotionEvent.obtain(ev);
+			} else if (touchTarget != null) {
+				if (isTouchInFloatingHeader(touchX, touchY)) {
+					touchTarget.dispatchTouchEvent(ev);
+				}
+
+				if (touchAction == MotionEvent.ACTION_UP) {
+					super.dispatchTouchEvent(ev);
+					clickFloatingHeader();
+					clearTouch();
+				} else if (touchAction == MotionEvent.ACTION_CANCEL) {
+					clearTouch();
+				} else if (touchAction == MotionEvent.ACTION_MOVE && (Math.abs(touchDownX - touchX) > maxMoveDistanceForTouch || Math.abs(touchDownY - touchY) > maxMoveDistanceForTouch)) {
+					MotionEvent event = MotionEvent.obtain(ev);
+					if (event != null) {
+						event.setAction(MotionEvent.ACTION_CANCEL);
+						touchTarget.dispatchTouchEvent(event);
+						event.recycle();
+					}
+
+					super.dispatchTouchEvent(touchDownEvent);
+					super.dispatchTouchEvent(ev);
+					clearTouch();
+				}
+
+				return true;
+			}
+		}
+
+		return super.dispatchTouchEvent(ev);
+	}
+
 	@SuppressWarnings ("NullableProblems")
 	@Override
 	protected void dispatchDraw ( Canvas canvas ) {
@@ -96,6 +147,37 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 
 	public void setOnItemClickListener ( SectionedListViewOnItemClickListener listener ) {
 		super.setOnItemClickListener(listener);
+	}
+
+	protected void clickFloatingHeader () {
+		setSelection(getHeaderViewsCount() + sectionedAdapter.getGlobalPositionForHeader(floatingHeaderSection));
+	}
+
+	protected boolean isTouchInFloatingHeader ( float touchX, float touchY ) {
+		if (floatingHeader != null) {
+			Rect hitRect = new Rect();
+			floatingHeader.getHitRect(hitRect);
+
+			hitRect.top += floatingHeaderOffset;
+			hitRect.bottom += floatingHeaderOffset + getPaddingBottom();
+			hitRect.left += getPaddingLeft();
+			hitRect.right += getPaddingRight();
+
+			return hitRect.contains((int) touchX, (int) touchY);
+		}
+
+		return false;
+	}
+
+	protected void clearTouch () {
+		touchTarget = null;
+		touchDownX = -1;
+		touchDownY = -1;
+
+		if (touchDownEvent != null) {
+			touchDownEvent.recycle();
+			touchDownEvent = null;
+		}
 	}
 
 	protected void checkForFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
@@ -178,5 +260,6 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 
 	protected void setup () {
 		super.setOnScrollListener(this);
+		maxMoveDistanceForTouch = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 	}
 }

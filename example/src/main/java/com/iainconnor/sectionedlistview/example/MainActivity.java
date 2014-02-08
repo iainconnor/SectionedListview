@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
+import android.widget.AdapterView;
+import android.widget.Toast;
 import com.iainconnor.sectionedlistview.SectionedListView;
+import com.iainconnor.sectionedlistview.SectionedListViewOnItemClickListener;
 
 import java.util.ArrayList;
 
@@ -73,9 +76,9 @@ public class MainActivity extends ActionBarActivity {
 	        movies.add(new Movie(13, "An Affair to Remember", "Leo McCarey", 1957));
 	        movies.add(new Movie(14, "Umbrellas of Cherbourg", "Jaques Demy", 1964));
 	        movies.add(new Movie(15, "Lost in Translation", "Sofia Coppola", 2003));
-	        movies.add(new Movie(15, "Roman Holiday", "William Wyler", 1953));
-	        movies.add(new Movie(15, "Wall-E", "Andrew Stanton", 2008));
-	        movies.add(new Movie(18, "My Night With Maud", "Eric Rohmer", 1969));
+			movies.add(new Movie(16, "Roman Holiday", "William Wyler", 1953));
+			movies.add(new Movie(17, "Wall-E", "Andrew Stanton", 2008));
+			movies.add(new Movie(18, "My Night With Maud", "Eric Rohmer", 1969));
 	        movies.add(new Movie(19, "Voyage to Italy", "Roberto Rossellini", 1954));
 	        movies.add(new Movie(20, "Dr Zhivago", "David Lean", 1965));
 
@@ -103,6 +106,26 @@ public class MainActivity extends ActionBarActivity {
 
 			SectionedAdapter sectionedAdapter = new SectionedAdapter(getActivity().getApplicationContext(), books, movies);
 			sectionedListView.setAdapter(sectionedAdapter);
+
+			sectionedListView.setOnItemClickListener(new SectionedListViewOnItemClickListener() {
+				@Override
+				public void onItemClick ( AdapterView<?> adapterView, View view, int section, int position, long id ) {
+					Toast toast = Toast.makeText(getActivity(), "Clicked item at " + position + " in " + section + ".", Toast.LENGTH_LONG);
+					toast.show();
+				}
+
+				@Override
+				public void onSectionHeaderClick ( AdapterView<?> adapterView, View view, int section, long id ) {
+					Toast toast = Toast.makeText(getActivity(), "Clicked header for " + section + ".", Toast.LENGTH_LONG);
+					toast.show();
+				}
+
+				@Override
+				public void onListHeaderClick ( AdapterView<?> adapterView, View view, int headerNumber, long id ) {
+					Toast toast = Toast.makeText(getActivity(), "Clicked list header for " + headerNumber + ".", Toast.LENGTH_LONG);
+					toast.show();
+				}
+			});
 
 			return rootView;
 		}
