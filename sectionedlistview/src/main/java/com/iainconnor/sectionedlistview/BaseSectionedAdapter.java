@@ -108,6 +108,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	@Override
 	public int getSection ( int globalPosition ) {
 		Integer cachedSection = sectionForGlobalPositionCache.size() > globalPosition ? sectionForGlobalPositionCache.get(globalPosition) : null;
+		cachedSection = null;
 		if (cachedSection != null) {
 			return cachedSection;
 		} else {
@@ -118,6 +119,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	@Override
 	public int getPositionInSection ( int globalPosition ) {
 		Integer cachedPosition = positionInSectionForGlobalPositionCache.size() > globalPosition ? positionInSectionForGlobalPositionCache.get(globalPosition) : null;
+		cachedPosition = null;
 		if (cachedPosition != null) {
 			return cachedPosition;
 		} else {
@@ -127,7 +129,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public boolean isHeader ( int globalPosition ) {
-		if (globalPositionSectionStartCache.contains(globalPosition)) {
+		if (false && globalPositionSectionStartCache.contains(globalPosition)) {
 			return true;
 		} else {
 			return calculateIsHeader(globalPosition);
@@ -136,7 +138,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public int getGlobalPositionForHeader ( int section ) {
-		if (globalPositionSectionStartCache.size() >= section) {
+		if (false && globalPositionSectionStartCache.size() >= section) {
 			return globalPositionSectionStartCache.get(section);
 		} else {
 			return calculateGlobalPositionForHeader(section);
