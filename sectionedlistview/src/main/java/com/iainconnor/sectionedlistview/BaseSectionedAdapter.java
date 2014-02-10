@@ -1,27 +1,24 @@
 package com.iainconnor.sectionedlistview;
 
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import java.util.ArrayList;
-
 abstract public class BaseSectionedAdapter extends BaseAdapter implements SectionedAdapter {
 	private final int COUNT_CACHE_INVALID_TOMBSTONE = -1;
 
-	protected ArrayList<Integer> positionInSectionForGlobalPositionCache;
-	protected ArrayList<Integer> countInSectionCache;
-	protected ArrayList<Integer> sectionForGlobalPositionCache;
-	protected ArrayList<Integer> globalPositionSectionStartCache;
+	protected SparseArray<Integer> positionInSectionForGlobalPositionCache;
+	protected SparseArray<Integer> sectionForGlobalPositionCache;
+	protected SparseArray<Integer> globalPositionSectionStartCache;
 	protected int globalCountCache;
 	protected int sectionCountCache;
 
 	public BaseSectionedAdapter () {
 		super();
-		positionInSectionForGlobalPositionCache = new ArrayList<Integer>();
-		countInSectionCache = new ArrayList<Integer>();
-		sectionForGlobalPositionCache = new ArrayList<Integer>();
-		globalPositionSectionStartCache = new ArrayList<Integer>();
+		positionInSectionForGlobalPositionCache = new SparseArray<Integer>();
+		sectionForGlobalPositionCache = new SparseArray<Integer>();
+		globalPositionSectionStartCache = new SparseArray<Integer>();
 		globalCountCache = sectionCountCache = COUNT_CACHE_INVALID_TOMBSTONE;
 	}
 
@@ -107,8 +104,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public int getSection ( int globalPosition ) {
-		Integer cachedSection = sectionForGlobalPositionCache.size() > globalPosition ? sectionForGlobalPositionCache.get(globalPosition) : null;
-		cachedSection = null;
+		Integer cachedSection = sectionForGlobalPositionCache.get(globalPosition);
 		if (cachedSection != null) {
 			return cachedSection;
 		} else {
@@ -118,8 +114,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public int getPositionInSection ( int globalPosition ) {
-		Integer cachedPosition = positionInSectionForGlobalPositionCache.size() > globalPosition ? positionInSectionForGlobalPositionCache.get(globalPosition) : null;
-		cachedPosition = null;
+		Integer cachedPosition = positionInSectionForGlobalPositionCache.get(globalPosition);
 		if (cachedPosition != null) {
 			return cachedPosition;
 		} else {
@@ -129,7 +124,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public boolean isHeader ( int globalPosition ) {
-		if (false && globalPositionSectionStartCache.contains(globalPosition)) {
+		if (globalPositionSectionStartCache.indexOfValue(globalPosition) >= 0) {
 			return true;
 		} else {
 			return calculateIsHeader(globalPosition);
@@ -138,7 +133,8 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public int getGlobalPositionForHeader ( int section ) {
-		if (false && globalPositionSectionStartCache.size() >= section) {
+		Integer cachedPosition = globalPositionSectionStartCache.get(section);
+		if (cachedPosition != null) {
 			return globalPositionSectionStartCache.get(section);
 		} else {
 			return calculateGlobalPositionForHeader(section);
@@ -175,20 +171,13 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	protected int calculatePositionInSection ( int globalPosition ) {
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
-			if (globalPositionSectionStartCache.size() <= section) {
-				globalPositionSectionStartCache.add(section);
-			} else {
-				globalPositionSectionStartCache.set(section, globalPositionSectionStart);
-			}
+			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
 			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
 
 			if (globalPosition >= globalPositionSectionStart && globalPosition < globalPositionSectionEnd) {
 				int positionInSection = globalPosition - globalPositionSectionStart - 1;
-				if (positionInSectionForGlobalPositionCache.size() <= globalPosition) {
-					positionInSectionForGlobalPositionCache.add(positionInSection);
-				} else {
-					positionInSectionForGlobalPositionCache.set(globalPosition, positionInSection);
-				}
+				positionInSectionForGlobalPositionCache.append(globalPosition, positionInSection);
+
 				return positionInSection;
 			}
 
@@ -201,11 +190,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	protected int calculateGlobalPositionForHeader ( int header ) {
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
-			if (globalPositionSectionStartCache.size() <= section) {
-				globalPositionSectionStartCache.add(globalPositionSectionStart);
-			} else {
-				globalPositionSectionStartCache.set(section, globalPositionSectionStart);
-			}
+			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
 			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
 
 			if (header == section) {
@@ -221,11 +206,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	protected boolean calculateIsHeader ( int globalPosition ) {
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
-			if (globalPositionSectionStartCache.size() <= section) {
-				globalPositionSectionStartCache.add(globalPositionSectionStart);
-			} else {
-				globalPositionSectionStartCache.set(section, globalPositionSectionStart);
-			}
+			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
 			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
 
 			if (globalPosition == globalPositionSectionStart) {
@@ -241,19 +222,12 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	protected int calculateSection ( int globalPosition ) {
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
-			if (globalPositionSectionStartCache.size() <= section) {
-				globalPositionSectionStartCache.add(globalPositionSectionStart);
-			} else {
-				globalPositionSectionStartCache.set(section, globalPositionSectionStart);
-			}
+			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
 			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
 
 			if (globalPosition >= globalPositionSectionStart && globalPosition < globalPositionSectionEnd) {
-				if (sectionForGlobalPositionCache.size() <= globalPosition) {
-					sectionForGlobalPositionCache.add(section);
-				} else {
-					sectionForGlobalPositionCache.set(globalPosition, section);
-				}
+				sectionForGlobalPositionCache.append(globalPosition, section);
+
 				return section;
 			}
 
@@ -265,7 +239,6 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	protected void resetCaches () {
 		positionInSectionForGlobalPositionCache.clear();
-		countInSectionCache.clear();
 		sectionForGlobalPositionCache.clear();
 		globalPositionSectionStartCache.clear();
 		globalCountCache = sectionCountCache = COUNT_CACHE_INVALID_TOMBSTONE;
