@@ -26,6 +26,20 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 	}
 
 	@Override
+	public boolean doesSectionHaveHeader ( int section ) {
+		if (section == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public boolean shouldListHeaderFloat ( int headerIndex ) {
+		return false;
+	}
+
+	@Override
 	public int getItemViewType ( int section, int position ) {
 		// In our example, each section has a different type of view for its items
 		return section;

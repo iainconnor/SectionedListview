@@ -237,7 +237,7 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		for (int globalPosition = firstVisibleGlobalPosition; globalPosition < firstVisibleGlobalPosition + visibleItemCount; globalPosition++) {
 			if (sectionedAdapter.isHeader(globalPosition)) {
 				View headerView = getChildAt(globalPosition - firstVisibleGlobalPosition);
-				if (headerView != null) {
+				if (headerView != null && floatingHeader != null) {
 					float headerViewTop = headerView.getTop();
 					float floatingHeaderHeight = floatingHeader.getMeasuredHeight();
 					headerView.setVisibility(VISIBLE);
@@ -255,17 +255,21 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	}
 
 	protected View getFloatingHeader ( int section, View currentFloatingHeader ) {
-		View headerView = sectionedAdapter.getHeaderView(section, currentFloatingHeader, this);
-		if (section != floatingHeaderSection || currentFloatingHeader == null) {
-			updateDimensionsForHeader(headerView);
-			floatingHeaderSection = section;
+		if (sectionedAdapter.doesSectionHaveHeader(section)) {
+			View headerView = sectionedAdapter.getHeaderView(section, currentFloatingHeader, this);
+			if (section != floatingHeaderSection || currentFloatingHeader == null) {
+				updateDimensionsForHeader(headerView);
+				floatingHeaderSection = section;
+			}
+
+			return headerView;
 		}
 
-		return headerView;
+		return null;
 	}
 
 	protected void updateDimensionsForHeader ( View headerView ) {
-		if (headerView.isLayoutRequested()) {
+		if (headerView != null && headerView.isLayoutRequested()) {
 			int widthMeasure = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), widthMode);
 			int heightMeasure;
 

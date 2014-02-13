@@ -31,4 +31,8 @@ public interface SectionedAdapter {
 	public int getGlobalPositionForHeader ( int section );
 
 	public int getGlobalPositionForItem ( int section, int position );
+
+	public boolean doesSectionHaveHeader ( int section );
+
+	public boolean shouldListHeaderFloat ( int headerIndex );
 }

@@ -42,6 +42,10 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	abstract public int getCountInSection ( int section );
 
+	abstract public boolean doesSectionHaveHeader ( int section );
+
+	abstract public boolean shouldListHeaderFloat ( int headerIndex );
+
 	@Override
 	public void notifyDataSetChanged () {
 		resetCaches();
@@ -125,7 +129,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 	@Override
 	public boolean isHeader ( int globalPosition ) {
 		if (globalPositionSectionStartCache.indexOfValue(globalPosition) >= 0) {
-			return true;
+			return doesSectionHaveHeader(globalPositionSectionStartCache.indexOfValue(globalPosition));
 		} else {
 			return calculateIsHeader(globalPosition);
 		}
@@ -133,12 +137,16 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public int getGlobalPositionForHeader ( int section ) {
-		Integer cachedPosition = globalPositionSectionStartCache.get(section);
-		if (cachedPosition != null) {
-			return globalPositionSectionStartCache.get(section);
-		} else {
-			return calculateGlobalPositionForHeader(section);
+		if (doesSectionHaveHeader(section)) {
+			Integer cachedPosition = globalPositionSectionStartCache.get(section);
+			if (cachedPosition != null) {
+				return globalPositionSectionStartCache.get(section);
+			} else {
+				return calculateGlobalPositionForHeader(section);
+			}
 		}
+
+		return -1;
 	}
 
 	@Override
@@ -146,6 +154,10 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		int sum = 0;
 
 		for (int i = section; i > 0; i--) {
+			if (doesSectionHaveHeader(i)) {
+				sum += 1;
+			}
+
 			if (i == section) {
 				sum += position;
 			} else {
@@ -160,7 +172,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		int countSum = 0;
 
 		for (int i = 0; i < getSectionCount(); i++) {
-			countSum += getCountInSection(i) + 1;
+			countSum += getCountInSection(i) + (doesSectionHaveHeader(i) ? 1 : 0);
 		}
 
 		globalCountCache = countSum;
@@ -172,10 +184,10 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
 			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
-			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
+			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + (doesSectionHaveHeader(section) ? 1 : 0);
 
 			if (globalPosition >= globalPositionSectionStart && globalPosition < globalPositionSectionEnd) {
-				int positionInSection = globalPosition - globalPositionSectionStart - 1;
+				int positionInSection = globalPosition - globalPositionSectionStart - (doesSectionHaveHeader(section) ? 1 : 0);
 				positionInSectionForGlobalPositionCache.append(globalPosition, positionInSection);
 
 				return positionInSection;
@@ -191,7 +203,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
 			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
-			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
+			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + (doesSectionHaveHeader(section) ? 1 : 0);
 
 			if (header == section) {
 				return globalPositionSectionStart;
@@ -207,7 +219,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
 			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
-			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
+			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + (doesSectionHaveHeader(section) ? 1 : 0);
 
 			if (globalPosition == globalPositionSectionStart) {
 				return true;
@@ -223,7 +235,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 		int globalPositionSectionStart = 0;
 		for (int section = 0; section < getSectionCount(); section++) {
 			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
-			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + 1;
+			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + (doesSectionHaveHeader(section) ? 1 : 0);
 
 			if (globalPosition >= globalPositionSectionStart && globalPosition < globalPositionSectionEnd) {
 				sectionForGlobalPositionCache.append(globalPosition, section);
