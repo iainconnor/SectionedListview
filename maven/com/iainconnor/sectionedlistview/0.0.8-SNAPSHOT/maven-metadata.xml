@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<groupId>com.iainconnor</groupId>
+	<artifactId>sectionedlistview</artifactId>
+	<version>0.0.8-SNAPSHOT</version>
+	<versioning>
+		<snapshot>
+			<timestamp>20140214.185615</timestamp>
+			<buildNumber>1</buildNumber>
+		</snapshot>
+		<lastUpdated>20140214185615</lastUpdated>
+	</versioning>
+</metadata>
