@@ -13,7 +13,9 @@ import java.util.ArrayList;
 
 public class SectionedAdapter extends BaseSectionedAdapter {
 	private final static int BOOK_SECTION = 0;
+	private final static int MORE_BOOK_SETION = 2;
 	private final static int MOVIE_SECTION = 1;
+	private final static int MORE_MOVIE_SECTION = 3;
 
 	protected Context context;
 	protected ArrayList<Book> books;
@@ -27,15 +29,23 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 
 	@Override
 	public boolean doesSectionHaveHeader ( int section ) {
-		if (section == 0) {
+		return true;
+
+		/*
+		if (section == 1) {
 			return false;
 		} else {
 			return true;
 		}
+		*/
 	}
 
 	@Override
 	public boolean shouldListHeaderFloat ( int headerIndex ) {
+		if (headerIndex == 1) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -66,9 +76,9 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 
 	@Override
 	public Object getItem ( int section, int position ) {
-		if (section == BOOK_SECTION) {
+		if (section == BOOK_SECTION || section == MORE_BOOK_SETION) {
 			return books.get(position);
-		} else if (section == MOVIE_SECTION) {
+		} else if (section == MOVIE_SECTION || section == MORE_MOVIE_SECTION) {
 			return movies.get(position);
 		}
 
@@ -78,9 +88,9 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 	@Override
 	public long getItemId ( int section, int position ) {
 		if (position != -1) {
-			if (section == BOOK_SECTION) {
+			if (section == BOOK_SECTION || section == MORE_BOOK_SETION) {
 				return books.get(position).getId();
-			} else if (section == MOVIE_SECTION) {
+			} else if (section == MOVIE_SECTION || section == MORE_MOVIE_SECTION) {
 				return movies.get(position).getId();
 			}
 		}
@@ -96,7 +106,7 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 			view = convertView;
 		} else {
 			int layoutToInflate;
-			if (section == BOOK_SECTION) {
+			if (section == BOOK_SECTION || section == MORE_BOOK_SETION) {
 				layoutToInflate = R.layout.book_row;
 			} else {
 				layoutToInflate = R.layout.movie_row;
@@ -110,7 +120,7 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 		}
 
 		if (view != null) {
-			if (section == BOOK_SECTION) {
+			if (section == BOOK_SECTION || section == MORE_BOOK_SETION) {
 				Book book = books.get(position);
 				((TextView) view.findViewById(R.id.mainText)).setText(book.getTitle());
 				((TextView) view.findViewById(R.id.dateText)).setText("" + book.getYear());
@@ -141,7 +151,7 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 		}
 
 		if (view != null) {
-			if (section == BOOK_SECTION) {
+			if (section == BOOK_SECTION || section == MORE_BOOK_SETION) {
 				((TextView) view.findViewById(R.id.headerText)).setText("Books");
 			} else {
 				((TextView) view.findViewById(R.id.headerText)).setText("Movies");
@@ -171,18 +181,16 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 
 	@Override
 	public int getSectionCount () {
-		return 2;
+		return 4;
 	}
 
 	@Override
 	public int getCountInSection ( int section ) {
 
-		if (section == BOOK_SECTION) {
+		if (section == BOOK_SECTION || section == MORE_BOOK_SETION) {
 			return books.size();
-		} else if (section == MOVIE_SECTION) {
+		} else {
 			return movies.size();
 		}
-
-		return 0;
 	}
 }

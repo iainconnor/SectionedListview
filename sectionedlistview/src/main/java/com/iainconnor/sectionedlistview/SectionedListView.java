@@ -15,10 +15,16 @@ import android.widget.ListView;
 public class SectionedListView extends ListView implements AbsListView.OnScrollListener {
 	protected OnScrollListener subclassOnScrollListener;
 	protected SectionedAdapter sectionedAdapter;
-	protected View floatingHeader;
-	protected int floatingHeaderViewType;
-	protected float floatingHeaderOffset;
+
+	protected View floatingListHeader;
+	protected float floatingListHeaderOffset;
+	protected int floatingListHeaderIndex;
+
+	protected View floatingSectionHeader;
+	protected int floatingSectionHeaderViewType;
+	protected float floatingSectionHeaderOffset;
 	protected int floatingHeaderSection;
+
 	protected boolean pinHeaders = true;
 	protected int widthMode;
 	protected int heightMode;
@@ -53,7 +59,7 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 
 	@Override
 	public void setAdapter ( ListAdapter adapter ) {
-		floatingHeader = null;
+		floatingSectionHeader = null;
 		sectionedAdapter = (SectionedAdapter) adapter;
 		super.setAdapter(adapter);
 	}
@@ -83,24 +89,36 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 
 	@Override
 	public boolean dispatchTouchEvent ( MotionEvent ev ) {
-		if (pinHeaders && floatingHeader != null) {
+		if (pinHeaders && (floatingSectionHeader != null || floatingListHeader != null)) {
 			float touchX = ev.getX();
 			float touchY = ev.getY();
 			int touchAction = ev.getAction();
 
-			if (touchAction == MotionEvent.ACTION_DOWN && touchTarget == null && isTouchInFloatingHeader(touchX, touchY)) {
-				touchTarget = floatingHeader;
+			if (touchAction == MotionEvent.ACTION_DOWN && touchTarget == null && isTouchInFloatingSectionHeader(touchX, touchY)) {
+				touchTarget = floatingSectionHeader;
+				touchDownX = touchX;
+				touchDownY = touchY;
+				touchDownEvent = MotionEvent.obtain(ev);
+			} else if (touchAction == MotionEvent.ACTION_DOWN && touchTarget == null && isTouchInFloatingListHeader(touchX, touchY)) {
+				touchTarget = floatingListHeader;
 				touchDownX = touchX;
 				touchDownY = touchY;
 				touchDownEvent = MotionEvent.obtain(ev);
 			} else if (touchTarget != null) {
-				if (isTouchInFloatingHeader(touchX, touchY)) {
+				if (isTouchInFloatingSectionHeader(touchX, touchY) || isTouchInFloatingListHeader(touchX, touchY)) {
 					touchTarget.dispatchTouchEvent(ev);
 				}
 
 				if (touchAction == MotionEvent.ACTION_UP) {
-					clearTouch();
-					clickFloatingHeader(ev);
+					if (touchTarget.equals(floatingSectionHeader)) {
+						clearTouch();
+						clickFloatingSectionHeader(ev);
+					} else if (touchTarget.equals(floatingListHeader)) {
+						clearTouch();
+						clickFloatingListHeader(ev);
+					} else {
+						clearTouch();
+					}
 				} else if (touchAction == MotionEvent.ACTION_CANCEL) {
 					clearTouch();
 				} else if (touchAction == MotionEvent.ACTION_MOVE && (Math.abs(touchDownX - touchX) > maxMoveDistanceForTouch || Math.abs(touchDownY - touchY) > maxMoveDistanceForTouch)) {
@@ -127,12 +145,22 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	@Override
 	protected void dispatchDraw ( Canvas canvas ) {
 		super.dispatchDraw(canvas);
-		if (pinHeaders && sectionedAdapter != null && floatingHeader != null) {
-			int count = canvas.save();
-			canvas.translate(0, floatingHeaderOffset);
-			canvas.clipRect(0, 0, getWidth(), floatingHeader.getMeasuredHeight());
-			floatingHeader.draw(canvas);
-			canvas.restoreToCount(count);
+		if (pinHeaders && sectionedAdapter != null) {
+			if (floatingSectionHeader != null) {
+				int count = canvas.save();
+				canvas.translate(0, floatingSectionHeaderOffset);
+				canvas.clipRect(0, 0, getWidth(), floatingSectionHeader.getMeasuredHeight());
+				floatingSectionHeader.draw(canvas);
+				canvas.restoreToCount(count);
+			}
+
+			if (floatingListHeader != null) {
+				int count = canvas.save();
+				canvas.translate(0, floatingListHeaderOffset);
+				canvas.clipRect(0, 0, getWidth(), floatingListHeader.getMeasuredHeight());
+				floatingListHeader.draw(canvas);
+				canvas.restoreToCount(count);
+			}
 		}
 	}
 
@@ -165,13 +193,27 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		}
 	}
 
-	protected void clickFloatingHeader ( final MotionEvent ev ) {
-		int globalPostion = sectionedAdapter.getGlobalPositionForHeader(floatingHeaderSection);
-		setSelectionFromTop(getHeaderViewsCount() + globalPostion, 1);
+	protected void clickFloatingListHeader ( final MotionEvent ev ) {
+		int globalPostion = floatingListHeaderIndex;
+		// Note, you need to set the + 1 to get it to trigger that its a real cell.
+		setSelectionFromTop(globalPostion, 1);
 		post(new Runnable() {
 			@Override
 			public void run () {
 				ViewGroup firstView = (ViewGroup) getChildAt(0);
+				searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
+			}
+		});
+	}
+
+	protected void clickFloatingSectionHeader ( final MotionEvent ev ) {
+		int globalPostion = sectionedAdapter.getGlobalPositionForHeader(floatingHeaderSection);
+		// Note, you need to set the + 1 to get it to trigger that its a real cell.
+		setSelectionFromTop(getHeaderViewsCount() + globalPostion, (floatingListHeader != null ? floatingListHeader.getMeasuredHeight() : 0) + 1);
+		post(new Runnable() {
+			@Override
+			public void run () {
+				ViewGroup firstView = (ViewGroup) getChildAt(getFirstVisiblePositionAfterFloatingHeader());
 				searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
 			}
 		});
@@ -188,13 +230,29 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		return hitRect.contains((int) touchX, (int) touchY);
 	}
 
-	protected boolean isTouchInFloatingHeader ( float touchX, float touchY ) {
-		if (floatingHeader != null) {
+	protected boolean isTouchInFloatingSectionHeader ( float touchX, float touchY ) {
+		if (floatingSectionHeader != null) {
 			Rect hitRect = new Rect();
-			floatingHeader.getHitRect(hitRect);
+			floatingSectionHeader.getHitRect(hitRect);
 
-			hitRect.top += floatingHeaderOffset;
-			hitRect.bottom += floatingHeaderOffset + getPaddingBottom();
+			hitRect.top += floatingSectionHeaderOffset;
+			hitRect.bottom += floatingSectionHeaderOffset + getPaddingBottom();
+			hitRect.left += getPaddingLeft();
+			hitRect.right += getPaddingRight();
+
+			return hitRect.contains((int) touchX, (int) touchY);
+		}
+
+		return false;
+	}
+
+	protected boolean isTouchInFloatingListHeader ( float touchX, float touchY ) {
+		if (floatingListHeader != null) {
+			Rect hitRect = new Rect();
+			floatingListHeader.getHitRect(hitRect);
+
+			hitRect.top = (int) floatingListHeaderOffset;
+			hitRect.bottom = (int) (floatingListHeader.getMeasuredHeight() + floatingListHeaderOffset + getPaddingBottom());
 			hitRect.left += getPaddingLeft();
 			hitRect.right += getPaddingRight();
 
@@ -216,36 +274,86 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	}
 
 	protected void checkForFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
-		if (pinHeaders && sectionedAdapter != null && sectionedAdapter.getGlobalCount() > 1 && (firstVisibleGlobalPosition >= getHeaderViewsCount())) {
-			updateFloatingHeader(firstVisibleGlobalPosition - getHeaderViewsCount(), visibleItemCount);
+		if (pinHeaders && sectionedAdapter != null && sectionedAdapter.getGlobalCount() > 1) {
+			updateFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
 		} else {
 			resetFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
 		}
 	}
 
+	protected int getFirstVisiblePositionAfterFloatingHeader () {
+		float heightSum = 0.0f;
+		if (floatingListHeader != null) {
+			for (int position = 0; position < getChildCount(); position++) {
+				View rowView = getChildAt(position);
+				if (rowView != null) {
+					if (heightSum >= floatingListHeader.getMeasuredHeight()) {
+						return position;
+					}
+					heightSum += rowView.getMeasuredHeight();
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	protected int getFirstVisibleGlobalPositionAfterFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
+		int firstVisibleGlobalPositionAfterFloatingHeader = firstVisibleGlobalPosition;
+		float heightSum = 0.0f;
+		if (floatingListHeader != null) {
+			for (int globalPosition = firstVisibleGlobalPosition; globalPosition < firstVisibleGlobalPosition + visibleItemCount; globalPosition++) {
+				View rowView = getChildAt(globalPosition - firstVisibleGlobalPosition);
+				if (rowView != null) {
+					heightSum += rowView.getMeasuredHeight();
+					firstVisibleGlobalPositionAfterFloatingHeader++;
+					if (heightSum >= floatingListHeader.getMeasuredHeight()) {
+						return firstVisibleGlobalPositionAfterFloatingHeader;
+					}
+				}
+			}
+		}
+
+		return firstVisibleGlobalPositionAfterFloatingHeader;
+	}
+
 	protected void updateFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
-		int currentSection = sectionedAdapter.getSection(firstVisibleGlobalPosition);
-		int headerViewType = sectionedAdapter.getHeaderItemViewType(currentSection);
+		int currentListHeaderPosition = firstVisibleGlobalPosition < getHeaderViewsCount() ? firstVisibleGlobalPosition : -1;
 
-		floatingHeader = getFloatingHeader(currentSection, floatingHeaderViewType != headerViewType ? null : floatingHeader);
-		floatingHeaderViewType = headerViewType;
+		floatingListHeader = getFloatingListHeader(currentListHeaderPosition, currentListHeaderPosition == -1 || currentListHeaderPosition >= floatingListHeaderIndex ? floatingListHeader : null);
 
-		updateDimensionsForHeader(floatingHeader);
+		int firstVisibleGlobalPositionAfterFloatingHeader = getFirstVisibleGlobalPositionAfterFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
 
-		floatingHeaderOffset = 0.0f;
+		int currentSection = firstVisibleGlobalPositionAfterFloatingHeader >= getHeaderViewsCount() ? sectionedAdapter.getSection(firstVisibleGlobalPositionAfterFloatingHeader - getHeaderViewsCount()) : -1;
+		int sectionHeaderViewType = sectionedAdapter.getHeaderItemViewType(currentSection);
+
+		floatingSectionHeader = getFloatingSectionHeader(currentSection, floatingSectionHeaderViewType != sectionHeaderViewType ? null : floatingSectionHeader);
+		floatingSectionHeaderViewType = sectionHeaderViewType;
+
+		floatingListHeaderOffset = 0.0f;
+		floatingSectionHeaderOffset = floatingListHeader != null ? floatingListHeader.getMeasuredHeight() : 0.0f;
 
 		for (int globalPosition = firstVisibleGlobalPosition; globalPosition < firstVisibleGlobalPosition + visibleItemCount; globalPosition++) {
-			if (sectionedAdapter.isHeader(globalPosition)) {
+			if (globalPosition < getHeaderViewsCount() && sectionedAdapter.shouldListHeaderFloat(globalPosition)) {
 				View headerView = getChildAt(globalPosition - firstVisibleGlobalPosition);
-				if (headerView != null && floatingHeader != null) {
+				if (headerView != null && floatingListHeader != null) {
 					float headerViewTop = headerView.getTop();
-					float floatingHeaderHeight = floatingHeader.getMeasuredHeight();
-					headerView.setVisibility(VISIBLE);
+					float floatingHeaderHeight = floatingListHeader.getMeasuredHeight();
 
 					if (floatingHeaderHeight >= headerViewTop && headerViewTop > 0) {
-						floatingHeaderOffset = headerViewTop - headerView.getHeight();
-					} else if (headerViewTop <= 0) {
-						headerView.setVisibility(INVISIBLE);
+						floatingListHeaderOffset = headerViewTop - headerView.getHeight();
+					}
+				}
+			}
+
+			if (sectionedAdapter.isHeader(globalPosition - getHeaderViewsCount())) {
+				View headerView = getChildAt(globalPosition - firstVisibleGlobalPosition);
+				if (headerView != null && floatingListHeader != null) {
+					float headerViewTop = headerView.getTop();
+					float floatingHeaderHeight = (floatingListHeader != null ? floatingListHeader.getMeasuredHeight() : 0.0f) + (floatingSectionHeader != null ? floatingSectionHeader.getMeasuredHeight() : 0.0f);
+
+					if (floatingHeaderHeight >= headerViewTop && headerViewTop > (floatingListHeader != null ? floatingListHeader.getMeasuredHeight() : 0.0f)) {
+						floatingSectionHeaderOffset = headerViewTop - headerView.getHeight();
 					}
 				}
 			}
@@ -254,8 +362,22 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		invalidate();
 	}
 
-	protected View getFloatingHeader ( int section, View currentFloatingHeader ) {
-		if (sectionedAdapter.doesSectionHaveHeader(section)) {
+	protected View getFloatingListHeader ( int index, View currentFloatingListHeader ) {
+		if (index >= 0 && sectionedAdapter.shouldListHeaderFloat(index)) {
+			View headerView = getChildAt(0);
+			if (index != floatingListHeaderIndex || currentFloatingListHeader == null) {
+				updateDimensionsForHeader(headerView);
+				floatingListHeaderIndex = index;
+			}
+
+			return headerView;
+		}
+
+		return currentFloatingListHeader;
+	}
+
+	protected View getFloatingSectionHeader ( int section, View currentFloatingHeader ) {
+		if (section >= 0 && sectionedAdapter.doesSectionHaveHeader(section)) {
 			View headerView = sectionedAdapter.getHeaderView(section, currentFloatingHeader, this);
 			if (section != floatingHeaderSection || currentFloatingHeader == null) {
 				updateDimensionsForHeader(headerView);
@@ -286,15 +408,10 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	}
 
 	protected void resetFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
-		floatingHeader = null;
-		floatingHeaderOffset = 0.0f;
-
-		for (int globalPosition = firstVisibleGlobalPosition; globalPosition < firstVisibleGlobalPosition + visibleItemCount; globalPosition++) {
-			View header = getChildAt(globalPosition);
-			if (header != null) {
-				header.setVisibility(VISIBLE);
-			}
-		}
+		floatingSectionHeader = null;
+		floatingListHeader = null;
+		floatingSectionHeaderOffset = 0.0f;
+		floatingListHeaderOffset = 0.0f;
 	}
 
 	protected void setup () {

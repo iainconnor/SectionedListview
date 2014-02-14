@@ -59,14 +59,17 @@ public class MainActivity extends ActionBarActivity {
 			sectionedListView = (SectionedListView) rootView.findViewById(R.id.list_view);
 
 			sectionedListView.addHeaderView(inflater.inflate(R.layout.header, sectionedListView, false));
+			sectionedListView.addHeaderView(inflater.inflate(R.layout.header_two, sectionedListView, false));
+			sectionedListView.addHeaderView(inflater.inflate(R.layout.header_three, sectionedListView, false));
 
 			ArrayList<Movie> movies = new ArrayList<Movie>();
 			movies.add(new Movie(1, "Brief Encounter", "David Lean", 1945));
 			movies.add(new Movie(2, "Casablanca", "Michael Curtiz", 1942));
 			movies.add(new Movie(3, "Before Sunrise", "Richard Linklater", 1995));
-	        movies.add(new Movie(4, "Before Sunset", "Richard Linklater", 2004));
-	        movies.add(new Movie(5, "Breathless", "Jean-Luc Godard", 1960));
-	        movies.add(new Movie(6, "In the Mood for Love", "Kar Wai Wong", 2000));
+			movies.add(new Movie(4, "Before Sunset", "Richard Linklater", 2004));
+			movies.add(new Movie(5, "Breathless", "Jean-Luc Godard", 1960));
+			/*
+		    movies.add(new Movie(6, "In the Mood for Love", "Kar Wai Wong", 2000));
 	        movies.add(new Movie(7, "The Apartment", "Billy Wilder", 1960));
 	        movies.add(new Movie(8, "Hannah & Her Sisters", "Woody Allen", 1986));
 	        movies.add(new Movie(9, "Eternal Sunshine of the Spotless Mind", "Michel Gondry", 2004));
@@ -121,13 +124,15 @@ public class MainActivity extends ActionBarActivity {
 			movies.add(new Movie(18, "My Night With Maud", "Eric Rohmer", 1969));
 			movies.add(new Movie(19, "Voyage to Italy", "Roberto Rossellini", 1954));
 			movies.add(new Movie(20, "Dr Zhivago", "David Lean", 1965));
+			*/
 
 			ArrayList<Book> books = new ArrayList<Book>();
 			books.add(new Book(1, "A Tale of Two Cities", "Charles Dickens", 1859));
 			books.add(new Book(2, "The Lord of the Rings", "J. R. R. Tolkien", 1954));
 			books.add(new Book(3, "And Then There Were None", "Agatha Christie", 1939));
-	        books.add(new Book(4, "The Hobbit", "J. R. R. Tolkien", 1937));
-	        books.add(new Book(5, "Dream of the Red Chamber", "Cao Xueqin", 1800));
+			books.add(new Book(4, "The Hobbit", "J. R. R. Tolkien", 1937));
+			books.add(new Book(5, "Dream of the Red Chamber", "Cao Xueqin", 1800));
+			/*
 	        books.add(new Book(6, "She", "H. Rider Haggard", 1887));
 	        books.add(new Book(7, "The Little Prince", "Antoine de Saint-Exupéry", 1943));
 	        books.add(new Book(8, "The Da Vinci Code", "Dan Brown", 2003));
@@ -143,6 +148,7 @@ public class MainActivity extends ActionBarActivity {
 	        books.add(new Book(18, "How the Steel Was Tempered", "Nikolai Ostrovsky", 1932));
 	        books.add(new Book(19, "War and Peace", "Leo Tolstoy", 1869));
 	        books.add(new Book(20, "Kane and Abel", "Jeffrey Archer", 1979));
+	        */
 
 			SectionedAdapter sectionedAdapter = new SectionedAdapter(getActivity().getApplicationContext(), books, movies);
 			sectionedListView.setAdapter(sectionedAdapter);
