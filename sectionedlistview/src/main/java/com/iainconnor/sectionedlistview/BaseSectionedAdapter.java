@@ -128,15 +128,11 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public boolean isHeader ( int globalPosition ) {
-		return calculateIsHeader(globalPosition);
-
-		/*
 		if (globalPositionSectionStartCache.indexOfValue(globalPosition) >= 0) {
 			return doesSectionHaveHeader(globalPositionSectionStartCache.indexOfValue(globalPosition));
 		} else {
 			return calculateIsHeader(globalPosition);
 		}
-		*/
 	}
 
 	@Override
