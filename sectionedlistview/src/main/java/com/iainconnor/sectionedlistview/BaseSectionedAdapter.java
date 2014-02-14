@@ -128,11 +128,15 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 
 	@Override
 	public boolean isHeader ( int globalPosition ) {
+		return calculateIsHeader(globalPosition);
+
+		/*
 		if (globalPositionSectionStartCache.indexOfValue(globalPosition) >= 0) {
 			return doesSectionHaveHeader(globalPositionSectionStartCache.indexOfValue(globalPosition));
 		} else {
 			return calculateIsHeader(globalPosition);
 		}
+		*/
 	}
 
 	@Override
@@ -221,7 +225,7 @@ abstract public class BaseSectionedAdapter extends BaseAdapter implements Sectio
 			globalPositionSectionStartCache.append(section, globalPositionSectionStart);
 			int globalPositionSectionEnd = globalPositionSectionStart + getCountInSection(section) + (doesSectionHaveHeader(section) ? 1 : 0);
 
-			if (globalPosition == globalPositionSectionStart) {
+			if (globalPosition == globalPositionSectionStart && doesSectionHaveHeader(section)) {
 				return true;
 			}
 

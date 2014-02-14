@@ -29,15 +29,11 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 
 	@Override
 	public boolean doesSectionHaveHeader ( int section ) {
-		return true;
-
-		/*
-		if (section == 1) {
+		if (section == 0) {
 			return false;
 		} else {
 			return true;
 		}
-		*/
 	}
 
 	@Override
