@@ -17,7 +17,7 @@ abstract public class SectionedListViewOnItemClickListener implements AdapterVie
 			sectionedAdapter = (SectionedAdapter) parent.getAdapter();
 		}
 
-		if (globalPosition > 0) {
+		if (globalPosition >= 0) {
 			int section = sectionedAdapter.getSection(globalPosition);
 			int position = sectionedAdapter.getPositionInSection(globalPosition);
 
