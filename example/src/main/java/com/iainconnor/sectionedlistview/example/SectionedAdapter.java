@@ -30,7 +30,7 @@ public class SectionedAdapter extends BaseSectionedAdapter {
 	@Override
 	public boolean doesSectionHaveHeader ( int section ) {
 		if (section == 0) {
-			return false;
+			return true;
 		} else {
 			return true;
 		}

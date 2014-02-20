@@ -302,14 +302,16 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 		int firstVisibleGlobalPositionAfterFloatingHeader = firstVisibleGlobalPosition;
 		float heightSum = 0.0f;
 		if (floatingListHeader != null) {
-			for (int globalPosition = firstVisibleGlobalPosition; globalPosition < firstVisibleGlobalPosition + visibleItemCount; globalPosition++) {
-				View rowView = getChildAt(globalPosition - firstVisibleGlobalPosition);
+			for (int visiblePosition = 0; visiblePosition < visibleItemCount; visiblePosition++) {
+				View rowView = getChildAt(visiblePosition);
 				if (rowView != null) {
-					heightSum += rowView.getMeasuredHeight();
-					firstVisibleGlobalPositionAfterFloatingHeader++;
-					if (heightSum >= floatingListHeader.getMeasuredHeight()) {
+					int rowViewVisibleHeight = (rowView.getMeasuredHeight()) + (rowView.getTop() > 0 ? 0 : rowView.getTop());
+
+					if ((heightSum + rowViewVisibleHeight) >= floatingListHeader.getMeasuredHeight()) {
 						return firstVisibleGlobalPositionAfterFloatingHeader;
 					}
+					heightSum += rowViewVisibleHeight;
+					firstVisibleGlobalPositionAfterFloatingHeader++;
 				}
 			}
 		}
