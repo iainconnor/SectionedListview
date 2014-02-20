@@ -203,7 +203,9 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 			@Override
 			public void run () {
 				ViewGroup firstView = (ViewGroup) getChildAt(0);
-				searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
+				if (firstView != null) {
+					searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
+				}
 			}
 		});
 	}
@@ -216,7 +218,9 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 			@Override
 			public void run () {
 				ViewGroup firstView = (ViewGroup) getChildAt(getFirstVisiblePositionAfterFloatingHeader());
-				searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
+				if (firstView != null) {
+					searchForClickableChildren(firstView, ev.getRawX(), ev.getRawY());
+				}
 			}
 		});
 	}
