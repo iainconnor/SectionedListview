@@ -179,15 +179,17 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	protected void searchForClickableChildren ( ViewGroup parent, float touchX, float touchY ) {
 		for (int i = 0; i < parent.getChildCount(); i++) {
 			View child = parent.getChildAt(i);
-			if (child instanceof ViewGroup) {
-				if (((ViewGroup) child).getChildCount() > 0) {
-					searchForClickableChildren((ViewGroup) child, touchX, touchY);
+			if (child != null) {
+				if (child instanceof ViewGroup) {
+					if (((ViewGroup) child).getChildCount() > 0) {
+						searchForClickableChildren((ViewGroup) child, touchX, touchY);
+					}
 				}
-			}
 
-			if (child.isClickable()) {
-				if (isTouchInView(child, touchX, touchY)) {
-					child.performClick();
+				if (child.isClickable()) {
+					if (isTouchInView(child, touchX, touchY)) {
+						child.performClick();
+					}
 				}
 			}
 		}
