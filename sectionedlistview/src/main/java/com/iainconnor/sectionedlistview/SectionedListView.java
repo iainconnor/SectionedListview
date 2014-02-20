@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -274,7 +275,7 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	}
 
 	protected void checkForFloatingHeader ( int firstVisibleGlobalPosition, int visibleItemCount ) {
-		if (pinHeaders && sectionedAdapter != null && sectionedAdapter.getGlobalCount() > 1) {
+		if (pinHeaders && sectionedAdapter != null) {
 			updateFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
 		} else {
 			resetFloatingHeader(firstVisibleGlobalPosition, visibleItemCount);
@@ -365,6 +366,7 @@ public class SectionedListView extends ListView implements AbsListView.OnScrollL
 	}
 
 	protected View getFloatingListHeader ( int index, View currentFloatingListHeader ) {
+		Log.v("Iain", index + "");
 		if (index >= 0 && sectionedAdapter.shouldListHeaderFloat(index)) {
 			View headerView = getChildAt(0);
 			if (index != floatingListHeaderIndex || currentFloatingListHeader == null) {
