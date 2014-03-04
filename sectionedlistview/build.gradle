@@ -23,12 +23,12 @@ android {
 apply plugin: 'maven'
 
 group = 'com.iainconnor'
-version = '0.0.19-SNAPSHOT'
+version = '0.0.20-SNAPSHOT'
 project.ext.description = "A listview with sections."
 
 dependencies {
-	compile 'uk.co.chrisjenx.Paralloid-master:paralloid:0.3.7-SNAPSHOT'
-	compile 'uk.co.chrisjenx.Paralloid-master:paralloidviews:0.3.8-SNAPSHOT'
+	compile 'uk.co.chrisjenx.Paralloid-master:paralloid:0.3.8-SNAPSHOT'
+	compile 'uk.co.chrisjenx.Paralloid-master:paralloidviews:0.3.9-SNAPSHOT'
 }
 
 uploadArchives {
