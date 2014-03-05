@@ -44,9 +44,4 @@ public class ParallaxSectionedListView extends SectionedListView implements Para
 	public void parallaxViewBackgroundBy ( View view, Drawable drawable, float v ) {
 		parallaxViewController.parallaxViewBackgroundBy(view, drawable, v);
 	}
-
-	@Override
-	public void recycleParallaxViewBackground () {
-		parallaxViewController.recycleParallaxViewBackground();
-	}
 }
