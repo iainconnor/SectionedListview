@@ -62,6 +62,9 @@ public class MainActivity extends ActionBarActivity {
 			sectionedListView.addHeaderView(inflater.inflate(R.layout.header_two, sectionedListView, false));
 			sectionedListView.addHeaderView(inflater.inflate(R.layout.header_three, sectionedListView, false));
 
+			sectionedListView.addFooterView(inflater.inflate(R.layout.header_three, sectionedListView, false));
+			sectionedListView.addFooterView(inflater.inflate(R.layout.header_two, sectionedListView, false));
+
 			ArrayList<Movie> movies = new ArrayList<Movie>();
 			movies.add(new Movie(1, "Brief Encounter", "David Lean", 1945));
 			movies.add(new Movie(2, "Casablanca", "Michael Curtiz", 1942));
@@ -169,6 +172,12 @@ public class MainActivity extends ActionBarActivity {
 				@Override
 				public void onListHeaderClick ( AdapterView<?> adapterView, View view, int headerNumber, long id ) {
 					Toast toast = Toast.makeText(getActivity(), "Clicked list header for " + headerNumber + ".", Toast.LENGTH_LONG);
+					toast.show();
+				}
+
+				@Override
+				public void onListFooterClick ( AdapterView<?> adapterView, View view, int footerNumber, long id ) {
+					Toast toast = Toast.makeText(getActivity(), "Clicked list footer for " + footerNumber + ".", Toast.LENGTH_LONG);
 					toast.show();
 				}
 			});

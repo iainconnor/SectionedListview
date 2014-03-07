@@ -17,7 +17,9 @@ abstract public class SectionedListViewOnItemClickListener implements AdapterVie
 			sectionedAdapter = (SectionedAdapter) parent.getAdapter();
 		}
 
-		if (globalPosition >= 0) {
+		if (globalPosition >= sectionedAdapter.getGlobalCount()) {
+			onListFooterClick(parent, view, globalPosition - sectionedAdapter.getGlobalCount(), id);
+		} else if (globalPosition >= 0) {
 			int section = sectionedAdapter.getSection(globalPosition);
 			int position = sectionedAdapter.getPositionInSection(globalPosition);
 
@@ -36,4 +38,6 @@ abstract public class SectionedListViewOnItemClickListener implements AdapterVie
 	abstract public void onSectionHeaderClick ( AdapterView<?> adapterView, View view, int section, long id );
 
 	abstract public void onListHeaderClick ( AdapterView<?> adapterView, View view, int headerNumber, long id );
+
+	abstract public void onListFooterClick ( AdapterView<?> adapterView, View view, int footerNumber, long id );
 }
