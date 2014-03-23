@@ -14,10 +14,6 @@ android {
 		versionCode 1
 		versionName "1.0"
 	}
-	release {
-		runProguard false
-		proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-	}
 }
 
 apply plugin: 'maven'
@@ -27,6 +23,7 @@ version = '0.0.23-SNAPSHOT'
 project.ext.description = "A listview with sections."
 
 dependencies {
+	compile 'com.android.support:appcompat-v7:+'
 	compile 'uk.co.chrisjenx.Paralloid-master:paralloid:0.3.10-SNAPSHOT'
 	compile 'uk.co.chrisjenx.Paralloid-master:paralloidviews:0.3.11-SNAPSHOT'
 }
