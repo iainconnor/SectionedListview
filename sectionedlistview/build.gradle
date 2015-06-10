@@ -5,8 +5,8 @@ repositories {
 }
 
 android {
-	compileSdkVersion 19
-	buildToolsVersion "19.0.1"
+	compileSdkVersion 21
+	buildToolsVersion "21.0.1"
 
 	defaultConfig {
 		minSdkVersion 8
@@ -19,7 +19,7 @@ android {
 apply plugin: 'maven'
 
 group = 'com.iainconnor'
-version = '0.0.23-SNAPSHOT'
+version = '0.0.24-SNAPSHOT'
 project.ext.description = "A listview with sections."
 
 dependencies {

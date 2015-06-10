@@ -5,14 +5,26 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:0.9.+'
+		classpath 'com.android.tools.build:gradle:1.2.3'
 	}
 }
 
 allprojects {
 	repositories {
 		mavenCentral()
-		maven {url 'http://archiva.tippingcanoe.com/repository/internal/'}
-		maven {url 'http://archiva.tippingcanoe.com/repository/snapshots/'}
+		maven {
+			url 'http://archiva.tippingcanoe.com/repository/internal/'
+			credentials {
+				username mavenUser
+				password mavenPassword
+			}
+		}
+		maven {
+			url 'http://archiva.tippingcanoe.com/repository/snapshots/'
+			credentials {
+				username mavenUser
+				password mavenPassword
+			}
+		}
 	}
 }
